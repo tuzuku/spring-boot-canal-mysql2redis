@@ -4,6 +4,8 @@ import com.alibaba.otter.canal.protocol.CanalEntry;
 
 public interface ModelMappingHandler<T> {
 
+    String getTableName();
+
     void insert(String database, String table, T data);
 
     void update(String database, String table, T data);

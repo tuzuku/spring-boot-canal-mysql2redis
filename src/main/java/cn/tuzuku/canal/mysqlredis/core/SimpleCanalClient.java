@@ -5,11 +5,11 @@ import com.alibaba.otter.canal.client.CanalConnector;
 import com.alibaba.otter.canal.client.CanalConnectors;
 import com.alibaba.otter.canal.protocol.CanalEntry.*;
 import com.alibaba.otter.canal.protocol.Message;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -22,15 +22,13 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class SimpleCanalClient {
 
-    private final ModelMappingHandler<User> modelMappingHandler;
+    private final MappingHandlerFactory modelMappingHandler;
 
-    public SimpleCanalClient(ModelMappingHandler<User> modelMappingHandler) {
-        this.modelMappingHandler = modelMappingHandler;
-    }
 
-    public void execute(String[] args) {
+    public void execute() {
         CanalConnector connector = CanalConnectors.newSingleConnector(
                 new InetSocketAddress("119.23.61.105", 11111), "test", "canal", "canal");
 
@@ -47,14 +45,13 @@ public class SimpleCanalClient {
                 int size = message.getEntries().size();
                 if (batchId == -1 || size == 0) {
                     emptyCount++;
-//                    log.info("empty count : " + emptyCount);
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
                     }
                 } else {
                     emptyCount = 0;
-                    System.out.printf("message[batchId=%s,size=%s] \n", batchId, size);
+                    log.info("message[batchId={},size={}]", batchId, size);
                     printEntry(message.getEntries());
                 }
 
@@ -111,7 +108,8 @@ public class SimpleCanalClient {
                     }
                 }
                 log.info(user.toString());
-                modelMappingHandler.execute(annotation.schema(), annotation.table(), user, eventType);
+
+                modelMappingHandler.getMappingHandler(annotation.schema() + "." + annotation.table()).execute(schemaName, tableName, user, eventType);
 
             }
 
@@ -135,15 +133,16 @@ public class SimpleCanalClient {
             if (schemaMap.containsKey(column.getName())) {
                 Field field = schemaMap.get(column.getName());
                 field.setAccessible(true);
-                if (column.getUpdated()) {
+                if (column.getIsNull()) {
+                    continue;
+                }
+                if (column.getIsKey() || column.getUpdated()) {
                     try {
-                        //将数据类型转换为需要的，因为传输的都是String
                         field.set(newInstance, convertValueToFieldType(field.getType(), column.getValue()));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
-
             }
         }
         BeanUtils.copyProperties(newInstance, user);
