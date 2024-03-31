@@ -1,7 +1,10 @@
 # Canal client with Spring Boot
 
 ## 项目说明
-本项目是基于Spring Boot框架开发的Canal客户端，旨在监控MySQL数据库的更改，并将这些更改同步到Redis缓存中。项目核心基于Canal官方提供的SimpleClient进行定制开发，以满足基本的数据同步需求。在实际部署中，用户可以根据具体的业务场景对客户端进行进一步的扩展和优化。
+
+本项目是基于Spring
+Boot框架开发的Canal客户端，旨在监控MySQL数据库的更改，并将这些更改同步到Redis缓存中。项目核心基于Canal官方提供的SimpleClient进行定制开发，以满足基本的数据同步需求。在实际部署中，用户可以根据具体的业务场景对客户端进行进一步的扩展和优化。
+
 ## 安装redis
 
 1. 拉取镜像
@@ -88,22 +91,28 @@ sh run.sh -e canal.auto.scan=false \
 ## 使用spring boot 创建canal 客户端
 
 - canal 客户端依赖、spring boot web 依赖、redis 服务依赖
-- 注：canal 客户端需要引入三个依赖
-    ```xml
-    <dependency>
+    - 注：canal 客户端需要引入三个依赖
+```xml
+    <dependencies>
+      <dependency>
         <groupId>com.alibaba.otter</groupId>
         <artifactId>canal.client</artifactId>
-        <version>1.1.4</version>
-    </dependency>
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-data-redis</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-    ```
+         <version>1.1.7</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.alibaba.otter</groupId>
+        <artifactId>canal.protocol</artifactId>
+        <version>1.1.7</version>
+      </dependency>
+      <dependency>
+         <groupId>com.alibaba.otter</groupId>
+         <artifactId>canal.common</artifactId>
+         <version>1.1.7</version>
+      </dependency>
+    </dependencies>
+    
+ ```
 - 本案例只使用canal 官网给出的SimpleClient 进行改造编写，实际使用中需要根据业务需求进行扩展
 
 
