@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 @Table(schema = "test", table = "user")
 @Data
-public class User implements Serializable {
+public class User implements Serializable, Model {
 
 
     @TableField("id")

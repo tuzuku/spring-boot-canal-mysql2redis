@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static cn.tuzuku.canal.mysqlredis.core.ModelConfig.MODEL_MAP;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -91,7 +93,8 @@ public class SimpleCanalClient {
             String schemaName = entry.getHeader().getSchemaName();
             String tableName = entry.getHeader().getTableName();
             //根据Handler 查找对应的处理器
-            Class<User> userClass = User.class;
+            Class<User> userClass = (Class<User>) MODEL_MAP.get(schemaName + "." + tableName);
+
             Table annotation = userClass.getAnnotation(Table.class);
             if (schemaName.equals(annotation.schema()) && tableName.equals(annotation.table())) {
                 User user = new User();
