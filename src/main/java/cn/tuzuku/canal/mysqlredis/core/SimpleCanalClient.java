@@ -30,7 +30,7 @@ public class SimpleCanalClient {
 
     public void execute() {
         CanalConnector connector = CanalConnectors.newSingleConnector(
-                new InetSocketAddress("119.23.61.105", 11111), "test", "canal", "canal");
+                new InetSocketAddress("127.0.0.1", 11111), "test", "canal", "canal");
 
         int batchSize = 1000;
         int emptyCount = 0;
